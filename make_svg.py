@@ -7,7 +7,7 @@ def create_piece(piece_id, holes, fillers, size=4):
     dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+80, xysize+80))
     
     # draw box. 
-    dwg.add(dwg.rect(insert=(20, 10), size=(xysize,xysize), stroke='black', fill='none'))
+    dwg.add(dwg.rect(insert=(20, 10), size=(xysize,xysize), stroke='black', fill='white'))
     
     for i in range(size):
         y_pos = 10 + i * 50
@@ -41,7 +41,8 @@ def create_piece(piece_id, holes, fillers, size=4):
 
 # Beispiel für ein Puzzleteil
 
-options = [[1,2,3,4]]#,[1,3],[1,4],[2,3],[2,4],[3,4]]
+#options = [[1,2,3,4]]#,[1,3],[1,4],[2,3],[2,4],[3,4]]
+options = [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
 
 for holes in options:
     for fillers in options:
