@@ -26,7 +26,7 @@ def create_piece(piece_id, holes, fillers, size=4):
     xsize=xysize
     ysize=xysize
     print(f'piece_{piece_id}.svg');
-    dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+40, xysize))
+    dwg = svgwrite.Drawing(f'pieces/piece_{piece_id}.svg', profile='tiny', size=(xysize+40, xysize))
     # draw top of box starting from right going to 0,0
     #dwg.add(dwg.path(d=f"M {xsize},{0} L {0},{0} ", stroke='black'))
     puzzle_string=f"M {xsize},{0} L {0},{0} "
