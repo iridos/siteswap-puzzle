@@ -1,43 +1,76 @@
 #! /usr/bin/env python3
 import svgwrite
 
-# carefully crafted bezier string that is a nubsie/hole
 def bezier_string(x, y):
-    y=y-14
-    x=x-1
-    return (f"m {x},{y+8} c 7,0 10,-8 18,-8 c 8,0 16,8 16,17 c 0,9 -8,17 -16,17 c -8,0 -11,-8 -18,-8")
+    #return (f"m {x},{y+8} c 7,0 10,-8 18,-8 c 8,0 16,8 16,17 c 0,9 -8,17 -16,17 c -8,0 -11,-8 -18,-8")
+    # the bit with the hole is 50 high. the hole itself is 34 high. the first point is 8 below the top point
+    # so we first have to draw a vertical line from x,y to x,y+8+8, then we can do relative movements
+    # carefully crafted bezier string that is a nubsie/hole
+    return (f"M {x},{y} L {x},{y+8+8} c 7,0 10,-8 18,-8 c 8,0 16,8 16,17 c 0,9 -8,17 -16,17 c -8,0 -11,-8 -18,-8 l 0,16")
 
+def bezier_string_or_line(x, y,bezier):
+    # the bit with the hole is 50 high. the hole itself is 34 high. the first point is 8 below the top point
+    # so we first have to draw a vertical line from x,y to x,y+8+8, then we can do relative movements
+    if(bezier):
+    # carefully crafted bezier string that is a nubsie/hole
+        return (f"L {x},{y+8+8} c 7,0 10,-8 18,-8 c 8,0 16,8 16,17 c 0,9 -8,17 -16,17 c -8,0 -11,-8 -18,-8 l 0,16")
+    else:
+        # less carefully crafted line if there is no nubsie/hole there
+        return (f"L {x},{y+8+8+34+8} ")
 
 
 def create_piece(piece_id, holes, fillers, size=4):
-    # size is the number of hole
-    # we take a pixel-size of 50 pixel per hole
-    # we make the piece square for now, so xsize=ysize
-    xysize= size*50
+    border=25
+    xysize= size*50 + 2*border
+    hole_height=50
+    xsize=xysize
+    ysize=xysize
     print(f'piece_{piece_id}.svg');
     dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+100, xysize+100))
-    dwg.add(dwg.rect(insert=(0, 0), size=(xysize+100, xysize+100), fill='lightblue')) 
-    # draw box. 
-    dwg.add(dwg.rect(insert=(20, 10), size=(xysize,xysize), stroke='black', fill='white'))
-    
+    # draw top of box starting from right going to 0,0
+    #dwg.add(dwg.path(d=f"M {xsize},{0} L {0},{0} ", stroke='black'))
+    puzzle_string=f"M {xsize},{0} L {0},{0} "
+    # holes on the left, first we draw the border up to the first nubs
+    # we are already at 0,0
+    #dwg.add(dwg.path(d=f"L 0,{border}", stroke='black'))
+    puzzle_string=f"{puzzle_string} L 0,{border}"
     for i in range(size):
-        y_pos = 10 + i * 50
-        # Löcher (links)
-        if i + 1 in holes:
-            x, y = 20, y_pos + 20  # Beispielwerte
-            dwg.add(dwg.path(d=bezier_string(x, y), stroke='black', fill='lightblue'))
-
-
-        # Nupsies (rechts)
-        if i + 1 in fillers:
-            x, y = 220, y_pos + 20  # Beispielwerte
-            dwg.add(dwg.path(d=bezier_string(x, y), stroke='black', fill='white'))
+        # holes left 
+        # we have a border on top , then every hole has a height
+        y_pos = i * hole_height + border
+        x, y = 0, y_pos 
+        #dwg.add(dwg.path(d=bezier_string_or_line(x, y,i+1 in holes), stroke='black', fill='white'))
+        puzzle_string=f"{puzzle_string} {bezier_string_or_line(x, y,i+1 in holes)}"
+    # fill vertical to bottom
+    #dwg.add(dwg.path(d=f"M {x},{y+hole_height} L {x},{y_pos+hole_height+ border} ", stroke='black'))
+    #puzzle_string=f"{puzzle_string} M {x},{y+hole_height} L {x},{y_pos+hole_height+ border} "
+    puzzle_string=f"{puzzle_string} L {x},{y_pos+hole_height+ border} "
+    # line at the bottom
+    y=y_pos+hole_height+ border
+    #dwg.add(dwg.path(d=f"M {x},{y} L {x+ysize},{y} ", stroke='black'))
+    puzzle_string=f"{puzzle_string} L {x+ysize},{y} "
+    # border from top to first nubs
+    #dwg.add(dwg.path(d=f"M {xsize},0 L {xsize},{border}", stroke='black'))
+    puzzle_string=f"{puzzle_string} M {xsize},0 L {xsize},{border}"
+    # 2nd loop for nubsies
+    for i in range(size):
+        # Nupsies (right)
+        # we have a border on top , then every hole has a height
+        y_pos = i * hole_height + border
+        x, y = 0, y_pos 
+        x, y = ysize, y_pos 
+        #dwg.add(dwg.path(d=bezier_string_or_line(x, y,i+1 in fillers), stroke='black', fill='white'))
+        puzzle_string=f"{puzzle_string} {bezier_string_or_line(x, y,i+1 in fillers)}"
+    # last bit from last nubs to bottom
+    #dwg.add(dwg.path(d=f"M {xsize},{y+hole_height} L {xsize},{ysize}", stroke='black'))
+    puzzle_string=f"{puzzle_string} M {xsize},{y+hole_height} L {xsize},{ysize} Z"
+    dwg.add(dwg.path(d=puzzle_string,stroke='black'))
     dwg.save()
 
 # all 4 holes/nubsies in one piece for testing
-options = [[1,2,3,4]]]
+options = [[1,2,3,4]]
 # all possible combinations of holes/pieces on one side
-options = [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+#options = [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
 
 
 for holes in options:
