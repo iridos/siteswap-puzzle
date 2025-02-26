@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 shorten = 4 # we shorten the siteswap arrows here by 4 making them causal
 puzzlelength = 4 # todo, should be puzzlelength levels of iteration
-for i in range(2, 9):
+for i in range(2, 10):
     if i == 3: continue
-    for j in range(2, 9):
+    for j in range(2, 10):
         if j == 3: continue
-        for k in range(2, 9):
+        for k in range(2, 10):
           if k == 3: continue
-          for l in range(2, 9):
+          for l in range(2, 10):
             if l == 3: continue
             piece     = [i,j,k,l]
             interface = [i,j,k,l]
@@ -39,12 +39,16 @@ for i in range(2, 9):
             occupied = {abs(x) for x in interface if x < 0}
             free     = sorted(set(range(1, size + 1)) - occupied)
             fillers  = sorted(x for x in interface if x > 0)
+            numberobjects = 0
+            for add in piece:
+                numberobjects = numberobjects + add
+            numberobjects = numberobjects / len(piece)
             # with interface
             #output=f"piece: %-14s  free: %-14s nubs: %-14s iface: %-18s"
             #print(output % (piece,free,fillers,interface)) 
             # regular output
-            output=f"n: %-3s piece: %-14s free: %-14s nubs: %-14s"
-            print(output % (len(free),piece,free,fillers)) 
+            output=f"nubs: %-3s objs: %-3s piece: %-14s free: %-14s nubs: %-14s"
+            print(output % (len(free),numberobjects,piece,free,fillers)) 
 
 
 
