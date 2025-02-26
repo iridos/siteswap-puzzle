@@ -26,7 +26,7 @@ def create_piece(piece_id, holes, fillers, size=4):
     xsize=xysize
     ysize=xysize
     print(f'piece_{piece_id}.svg');
-    dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+100, xysize+100))
+    dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+40, xysize))
     # draw top of box starting from right going to 0,0
     #dwg.add(dwg.path(d=f"M {xsize},{0} L {0},{0} ", stroke='black'))
     puzzle_string=f"M {xsize},{0} L {0},{0} "
@@ -64,13 +64,14 @@ def create_piece(piece_id, holes, fillers, size=4):
     # last bit from last nubs to bottom
     #dwg.add(dwg.path(d=f"M {xsize},{y+hole_height} L {xsize},{ysize}", stroke='black'))
     puzzle_string=f"{puzzle_string} M {xsize},{y+hole_height} L {xsize},{ysize} Z"
-    dwg.add(dwg.path(d=puzzle_string,stroke='black'))
+    dwg.add(dwg.path(id=f"holes{holes[0]}{holes[1]}_fillers{fillers[0]}{fillers[1]}", d=puzzle_string,stroke='black',fill='#ccddcc',stroke_width=2))
+    dwg.add(dwg.text("test",id="siteswap",insert=(100,20),font_size=20, color="blue"))
     dwg.save()
 
 # all 4 holes/nubsies in one piece for testing
 options = [[1,2,3,4]]
 # all possible combinations of holes/pieces on one side
-#options = [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+options = [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
 
 
 for holes in options:
