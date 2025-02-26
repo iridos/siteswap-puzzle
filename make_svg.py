@@ -1,24 +1,22 @@
 #! /usr/bin/env python3
 import svgwrite
 
+# carefully crafted bezier string that is a nubsie/hole
 def bezier_string(x, y):
     y=y-14
     x=x-1
-    return (f"M {x} {y+10} "  # Startpunkt
-            f"C {x+5.78} {y+10}, {x+7.4} {y+8.3}, {x+10} {y+6.6} "
-            f"C {x+12.9} {y+4.8}, {x+15.8} {y+3}, {x+18} {y+3} "
-            f"C {x+26.7} {y+3}, {x+34} {y+10.1}, {x+34} {y+19} "
-            f"C {x+34} {y+27.7}, {x+26.9} {y+35}, {x+18} {y+35} "
-            f"C {x+15.8} {y+35}, {x+13.2} {y+33.2}, {x+10.5} {y+31.5} "
-            f"C {x+7.8} {y+29.7}, {x+4.78} {y+28.1}, {x} {y+28}")
+    return (f"m {x},{y+8} c 7,0 10,-8 18,-8 c 8,0 16,8 16,17 c 0,9 -8,17 -16,17 c -8,0 -11,-8 -18,-8")
 
 
 
 def create_piece(piece_id, holes, fillers, size=4):
+    # size is the number of hole
+    # we take a pixel-size of 50 pixel per hole
+    # we make the piece square for now, so xsize=ysize
     xysize= size*50
     print(f'piece_{piece_id}.svg');
-    dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+80, xysize+80))
-    dwg.add(dwg.rect(insert=(0, 0), size=(xysize+80, xysize+80), fill='lightblue')) 
+    dwg = svgwrite.Drawing(f'piece_{piece_id}.svg', profile='tiny', size=(xysize+100, xysize+100))
+    dwg.add(dwg.rect(insert=(0, 0), size=(xysize+100, xysize+100), fill='lightblue')) 
     # draw box. 
     dwg.add(dwg.rect(insert=(20, 10), size=(xysize,xysize), stroke='black', fill='white'))
     
@@ -36,15 +34,16 @@ def create_piece(piece_id, holes, fillers, size=4):
             dwg.add(dwg.path(d=bezier_string(x, y), stroke='black', fill='white'))
     dwg.save()
 
-# Beispiel für ein Puzzleteil
-
-options = [[1,2,3,4]]#,[1,3],[1,4],[2,3],[2,4],[3,4]]
+# all 4 holes/nubsies in one piece for testing
+options = [[1,2,3,4]]]
+# all possible combinations of holes/pieces on one side
 options = [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+
 
 for holes in options:
     for fillers in options:
         name = f"h{holes[0]}{holes[1]}n{fillers[0]}{fillers[1]}"
-        #holes = [1, 2]  # Positions mit Löchern
-        #fillers = [3, 4]  # Positions mitNupsies
+        #holes = [1, 2]  # Positions with holes
+        #fillers = [3, 4]  # Positions with nupsies
         create_piece(name, holes, fillers)
 

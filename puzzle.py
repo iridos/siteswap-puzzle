@@ -1,14 +1,16 @@
 #!/usr/bin/python3
+# siteswap-puzzle
+# finds "puzzle-pieces", i.e. numbers that can become valid siteswaps when combined with other pieces
+
+
 shorten = 4 # we shorten the siteswap arrows here by 4 making them causal
 puzzlelength = 4 # todo, should be puzzlelength levels of iteration
-for i in range(2, 10):
-    if i == 3: continue
-    for j in range(2, 10):
-        if j == 3: continue
-        for k in range(2, 10):
-          if k == 3: continue
-          for l in range(2, 10):
-            if l == 3: continue
+#valid_numbers = [x for x in range(2, 10) if x != 3]  # Zahlen ohne 3
+valid_numbers = [2, 4, 5, 6, 7, 8, 9]  # Zahlen 2-10 ohne 3
+for i in valid_numbers:
+    for j in valid_numbers:
+        for k in valid_numbers:
+          for l in valid_numbers:
             piece     = [i,j,k,l]
             interface = [i,j,k,l]
             size=len(interface)
@@ -21,7 +23,7 @@ for i in range(2, 10):
                 # 6,6,6,6 becomes 2,2,2,2 then +1+idx: 3,4,5,6
                 interface[idx] += idx + 1 - shorten
                 # we do not support arrows going backwards, so break
-                if(interface[idx] <= 0):
+                if(interface[idx] <= 0 ):
                     interface=[]
                     break
                 else:
@@ -33,6 +35,9 @@ for i in range(2, 10):
                     # start outgoing connection from future puzzle piece start
                     # -3,-4,1,2
                     interface[idx] -= puzzlelength
+                    if interface[idx]>puzzlelength: 
+                        interface=[]
+                        break 
             if len(set(interface)) < puzzlelength:  
                 # remove duplikates (invlid siteswap)
                 continue
@@ -47,7 +52,7 @@ for i in range(2, 10):
             #output=f"piece: %-14s  free: %-14s nubs: %-14s iface: %-18s"
             #print(output % (piece,free,fillers,interface)) 
             # regular output
-            output=f"nubs: %-3s objs: %-3s piece: %-14s free: %-14s nubs: %-14s"
+            output=f"n: %-3s objs: %-3s piece: %-14s free: %-14s nubs: %-14s"
             print(output % (len(free),numberobjects,piece,free,fillers)) 
 
 
