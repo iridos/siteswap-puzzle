@@ -15,9 +15,10 @@ for i in range(2, 9):
                continue
             piece =     [i,j,k,l]
             interface = [i,j,k,l]
+            size=len(interface)
             # minus 4 to convert to causal
             # minus position to 
-            for idx in range(0,len(interface)):
+            for idx in range(0,size):
                 # causal: minus number hands (4)
                 # +idx: make the sswp start from index 0,
                 # +1: count that we count positions from 1
@@ -39,4 +40,17 @@ for i in range(2, 9):
             if len(set(interface)) < puzzlelength:  
                 # remove duplikates (invlid siteswap)
                 continue
-            print("piece: ",piece,"iface: ",interface) 
+            #print("piece: ",piece,"iface: ",interface) 
+            occupied = {abs(x) for x in interface if x < 0}
+            free     = sorted(set(range(1, size + 1)) - occupied)
+            fillers = sorted(x for x in interface if x > 0)
+            # with interface
+            #output=f"piece: %-14s  free: %-14s nubs: %-14s iface: %-18s"
+            #print(output % (piece,free,fillers,interface)) 
+            # regular output
+            output=f"n: %-3s piece: %-14s free: %-14s nubs: %-14s"
+            print(output % (len(free),piece,free,fillers)) 
+
+
+
+
