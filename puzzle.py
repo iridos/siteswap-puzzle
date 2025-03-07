@@ -5,11 +5,12 @@ import itertools
 
 
 shorten = 4 # we shorten the siteswap arrows here by 4 making them causal
-puzzlelength = 4 # todo, should be puzzlelength levels of iteration
-#valid_numbers = [x for x in range(2, 10) if x != 3]  # Zahlen ohne 3
+puzzlelength = 4
 valid_numbers = [2, 4, 5, 6, 7, 8, 9, 10]  # Zahlen 2-10 ohne 3
+nubs_per_piece=2
 
-for piece in map(list, itertools.product(valid_numbers, repeat=4)):
+def calculate_pieces(puzzlelength, shorten, valid_numbers, nubs_per_piece):
+  for piece in map(list, itertools.product(valid_numbers, repeat=4)):
     interface = list(piece)
     size=len(interface)
     # minus 4 to convert to causal
@@ -42,6 +43,12 @@ for piece in map(list, itertools.product(valid_numbers, repeat=4)):
     occupied = {abs(x) for x in interface if x < 0}
     free     = sorted(set(range(1, size + 1)) - occupied)
     fillers  = sorted(x for x in interface if x > 0)
+    if len(fillers) != len(free):
+        import sys 
+        print("error: in and out does not match ", len(occupied) , len(free))
+        sys.exit()
+    if len(free) != nubs_per_piece:
+        continue
     numberobjects = 0
     for add in piece:
         numberobjects = numberobjects + add
@@ -54,5 +61,5 @@ for piece in map(list, itertools.product(valid_numbers, repeat=4)):
     print(output % (len(free),numberobjects,piece,free,fillers)) 
 
 
-
+calculate_pieces(puzzlelength, shorten, valid_numbers, nubs_per_piece)
 
