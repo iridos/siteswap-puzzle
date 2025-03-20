@@ -77,9 +77,12 @@ def create_piece(piece_id, holes, fillers, size=4):
     x_start, y_top, y_bottom = 60, 80, 200  # Startpositionen anpassen
     spacing = 40  # Abstand zwischen den Zahlen
     for idx, num in enumerate(piece_id):
+        if num > 15:
+            raise ValueError(f"{num} can not be converted to 1-digit hexadecimal (0-9, A-F)")
+        hex_num = f"{num:X}"
         x_pos = x_start + idx * spacing
         y_pos = y_top if idx % 2 == 0 else y_bottom  # Gerade nach oben, ungerade nach unten
-        dwg.add(dwg.text(str(num), insert=(x_pos, y_pos), font_size=40, fill="blue"))
+        dwg.add(dwg.text(str(hex_num), insert=(x_pos, y_pos), font_size=40, fill="blue"))
     dwg.save()
 
 def calculate_pieces(puzzlelength, shorten, valid_numbers, nubs_per_piece):
